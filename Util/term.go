@@ -3,6 +3,7 @@ package Util
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 
 	prompt "github.com/c-bata/go-prompt"
@@ -10,7 +11,13 @@ import (
 	"github.com/sidhaler/attg/dbUtil"
 )
 
-var cfpath string = "./attg.toml"
+//
+var cfpath string
+
+// const (
+// 	cfpathlinux  string = "/usr/bin/attg/attg.toml"
+// 	cfpathdarwin string = "/usr/local/bin/attg/attg.toml"
+// )
 
 func Comp(t prompt.Document) []prompt.Suggest {
 	return []prompt.Suggest{
@@ -120,6 +127,15 @@ func ExeCommand(str string) {
 		*/
 		fmt.Print("\033[H\033[2J")
 	case "NEW":
+		kernel := runtime.GOOS
+		switch kernel {
+		case "linux":
+			cfpath = at.Binpathlinux
+		case "darwin":
+			cfpath = at.Binpathdarwin
+		default:
+			cfpath = at.Cfpathlinux
+		}
 		os.Remove(cfpath)
 		os.Create(cfpath)
 		fmt.Println("New config file succesfully created!")

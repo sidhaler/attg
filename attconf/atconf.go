@@ -4,12 +4,25 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strconv"
 
 	"github.com/spf13/viper"
 )
 
-var cfpath string = "./attg.toml"
+//var cfpath string = "./attg.toml"
+
+const (
+	Cfpathlinux   string = "/usr/bin/attg/attg.toml"
+	Cfpathdarwin  string = "/usr/local/bin/attg/attg.toml"
+	Binpathlinux  string = "/usr/bin/attg"
+	Binpathdarwin string = "/usr/local/bin/attg"
+	Defbinpath    string = "./attg"
+	FOLDERlinux   string = "/usr/bin/attg/"
+	FOLDERdarwin  string = "/usr/local/bin/attg"
+)
+
+var cfpath string
 
 type Configuration struct {
 	Passwd, Database, Usr, Table, Host string
@@ -20,6 +33,15 @@ type Atcfg struct {
 }
 
 func (s *Atcfg) SetConfig(key string, value string) {
+	kernel := runtime.GOOS
+	switch kernel {
+	case "linux":
+		cfpath = Cfpathlinux
+	case "darwin":
+		cfpath = Cfpathdarwin
+	default:
+		cfpath = Cfpathlinux
+	}
 	switch key {
 	case "SETDATABASE":
 		viper.Set("DATABASE", value)

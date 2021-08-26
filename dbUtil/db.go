@@ -79,13 +79,19 @@ func writer(path string, str []string, perms os.FileMode) {
 
 	file, err := os.OpenFile(path, os.O_RDWR, perms)
 	check(err)
-	defer file.Close()
+
 	w := bufio.NewWriter(file)
 	for _, line := range str {
-		fmt.Fprintln(w, line)
+		//fmt.Fprintln(w, line)
+		w.WriteString(line)
 	}
+	fmt.Println(len(str))
+	w.Flush()
+	file.Close()
 	fmt.Println("written...")
 }
+
+// func ImportTable(path string)
 
 func ImportAll(path string) {
 	_, err := os.Create(path)
@@ -125,7 +131,7 @@ func ImportAll(path string) {
 		//writer(path, OK, perms)
 	}
 	writer(path, bomba, perms)
-	fmt.Println(bomba)
+	//fmt.Println(bomba)
 	check(err)
 }
 
