@@ -14,7 +14,9 @@ import (
 )
 
 var args struct {
-	Install bool `arg:"-i" default:"false" help:"Moves app to binary folder, and creates config file"`
+	Install bool   `arg:"-i" default:"false" help:"Moves app to binary folder, and creates config file"`
+	SrcFile string `arg:"positional" `
+	Copy    bool   `arg:"-c" default:"false" help:"Copy config"`
 }
 
 func check(err error) {
@@ -23,8 +25,15 @@ func check(err error) {
 	}
 }
 func main() {
-
 	arg.MustParse(&args)
+	if args.Copy {
+		if args.SrcFile == "" {
+			fmt.Println("Provide .toml file as argument")
+		}
+
+		at.CopyConfig(args.SrcFile)
+	}
+
 	if args.Install {
 		kernel := runtime.GOOS
 		switch kernel {
@@ -72,15 +81,13 @@ func main() {
 	err = viper.ReadConfig(fel)
 	check(err)
 	var e at.Atcfg
-	e.Getconf()
 	e.Warns()
 	fmt.Println(e)
-
+	defer fel.Close()
 	t := prompt.New(
 		Util.ExeCommand,
 		Util.Comp,
 	)
 	t.Run()
-	fel.Close()
 
 }

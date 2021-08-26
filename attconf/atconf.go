@@ -2,6 +2,7 @@ package attconf
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"runtime"
@@ -125,4 +126,32 @@ func (s *Atcfg) FatalWarns() {
 		os.Exit(01)
 	}
 
+}
+
+func CopyConfig(path string) {
+	var dst string
+	src, err := os.Open(path)
+	if err != nil {
+		fmt.Println("Unexpected error with source file")
+		return
+	}
+	defer src.Close()
+	kernel := runtime.GOOS
+	switch kernel {
+	case "linux":
+		dst = Cfpathlinux
+	case "darwin":
+		dst = Cfpathdarwin
+	}
+	f, err := os.Create(dst)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	_, err = io.Copy(f, src)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Copied !")
 }

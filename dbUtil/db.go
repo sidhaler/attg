@@ -33,7 +33,7 @@ func OpenCon() (db *sql.DB) {
 	cfg := s.Getconf()
 	s.FatalWarns()
 	port := strconv.Itoa(cfg.Port)
-	fmt.Println(cfg.Usr + ":" + cfg.Passwd + "@tcp(" + cfg.Host + ":" + port + ")/" + cfg.Database)
+	//fmt.Println(cfg.Usr + ":" + cfg.Passwd + "@tcp(" + cfg.Host + ":" + port + ")/" + cfg.Database)
 	db, err := sql.Open("mysql", cfg.Usr+":"+cfg.Passwd+"@tcp("+cfg.Host+":"+port+")/"+cfg.Database)
 	check(err)
 	db.SetConnMaxLifetime(Lifetime)
@@ -85,7 +85,6 @@ func writer(path string, str []string, perms os.FileMode) {
 		//fmt.Fprintln(w, line)
 		w.WriteString(line)
 	}
-	fmt.Println(len(str))
 	w.Flush()
 	file.Close()
 	fmt.Println("written...")
@@ -111,7 +110,7 @@ func ImportAll(path string) {
 
 	scanArgs := make([]interface{}, len(values))
 	for i := range values {
-		scanArgs[i] = &values[i]
+		scanArgs[i] = &values[i+1]
 	}
 	var bomba []string
 	for rows.Next() {

@@ -22,18 +22,19 @@ var cfpath string
 func Comp(t prompt.Document) []prompt.Suggest {
 	return []prompt.Suggest{
 		// DATABASE calls
-		{Text: "fetch", Description: "Gets data from db (kinda bugged)"},
+		{Text: "fetch", Description: "Gets data from db (little bugged)"},
 		{Text: "add", Description: "Add data to table (in progress)"},
 		{Text: "remove", Description: "Remove record from table (in progress)"},
 		{Text: "edit", Description: "Edit record in table (in progress)"},
-		{Text: "import", Description: "Import data from table (kinda bugged)"},
+		{Text: "import", Description: "Import data from table"},
 		{Text: "↓", Description: ""},
 		// configuration calls, don't use "" while writing data
 		{Text: "SETPASSWORD", Description: "Set password of db"},
 		{Text: "SETUSERNAME", Description: "Set username of db"},
 		{Text: "SETDATABASE", Description: "Set database to operate with"},
-		{Text: "SETTABLE", Description: "Table to get data from"},
+		{Text: "SETTABLE", Description: "Set default table to fetch data from"},
 		{Text: "SETPORT", Description: "Default (mysql): 3306"},
+		{Text: "cfimport", Description: "Config import"},
 		{Text: "shc", Description: "Show config file"},
 		{Text: "↓", Description: ""},
 		// other commands
@@ -105,9 +106,16 @@ func ExeCommand(str string) {
 		}
 	case "IMPORT":
 		if len(block) < 2 {
-			block = append(block, "DATA.txt")
+			// DEAFULT SET NAME OF FILE SAME AS NAME OF TABLE
+			block = append(block, s.Getconf().Table)
 		}
 		dbUtil.ImportAll(block[1])
+	case "CFIMPORT":
+		if len(block) < 2 {
+			fmt.Println("please provide path to .toml file")
+			return
+		}
+		go at.CopyConfig(block[1])
 	case "SHC":
 		fmt.Println("Address =>", s.Getconf().Host)
 		fmt.Println("Database =>", s.Getconf().Database)
