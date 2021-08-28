@@ -14,11 +14,10 @@ import (
 //
 var cfpath string
 
-// const (
-// 	cfpathlinux  string = "/usr/bin/attg/attg.toml"
-// 	cfpathdarwin string = "/usr/local/bin/attg/attg.toml"
-// )
-
+/*
+var commands = [...]string{"fetch", "add", "remove", "import", "SETPASSWORD", "SETUSERNAME",
+	"SETDATABASE", "SETTABLE", "cfimport", "shc", "new", "clear", "testcon"}
+*/
 func Comp(t prompt.Document) []prompt.Suggest {
 	return []prompt.Suggest{
 		// DATABASE calls
@@ -41,7 +40,8 @@ func Comp(t prompt.Document) []prompt.Suggest {
 		{Text: "new", Description: "Remove old configuration file and create new one"},
 		{Text: "clear", Description: "Clears terminal ; )"},
 		{Text: "testcon", Description: "Test connection"},
-		{Text: "…………………………………………", Description: ""},
+		{Text: "exit", Description: "Exits..."},
+		{Text: "………………………………", Description: ""},
 		//{Text: "install", Description: "Move application to binary dir."},
 	}
 }
@@ -51,6 +51,7 @@ var s at.Atcfg
 func ExeCommand(str string) {
 	str = strings.TrimSpace(str)
 	block := strings.Split(str, " ")
+
 	block[0] = strings.ToUpper(block[0])
 	switch block[0] {
 	// CONFIGURATION
@@ -66,6 +67,7 @@ func ExeCommand(str string) {
 			fmt.Println("please set database after 'space'")
 			return
 		}
+
 		s.SetConfig(block[0], block[1])
 		fmt.Println("Success")
 	case "SETUSERNAME":
@@ -80,6 +82,7 @@ func ExeCommand(str string) {
 			fmt.Println("please set table after 'space'")
 			return
 		}
+
 		s.SetConfig(block[0], block[1])
 		fmt.Println("Success")
 	case "SETHOST":
@@ -87,6 +90,7 @@ func ExeCommand(str string) {
 			fmt.Println("please set host after 'space'")
 			return
 		}
+
 		s.SetConfig(block[0], block[1])
 		fmt.Println("Success")
 	case "SETPORT":
@@ -94,9 +98,11 @@ func ExeCommand(str string) {
 			fmt.Println("please set port after 'space'")
 			return
 		}
+
 		s.SetConfig(block[0], block[1])
 		fmt.Println("Success")
 	case "FETCH":
+
 		if len(block) < 2 {
 			dbUtil.Fetchall()
 			return
@@ -106,8 +112,9 @@ func ExeCommand(str string) {
 		}
 	case "IMPORT":
 		if len(block) < 2 {
-			// DEAFULT SET NAME OF FILE SAME AS NAME OF TABLE
-			block = append(block, s.Getconf().Table)
+			tablename := s.Getconf().Table + ".txt"
+			block = append(block, tablename)
+
 		}
 		dbUtil.ImportAll(block[1])
 	case "CFIMPORT":
@@ -115,8 +122,10 @@ func ExeCommand(str string) {
 			fmt.Println("please provide path to .toml file")
 			return
 		}
-		go at.CopyConfig(block[1])
+
+		go at.Importf(block[1])
 	case "SHC":
+
 		fmt.Println("Address =>", s.Getconf().Host)
 		fmt.Println("Database =>", s.Getconf().Database)
 		fmt.Println("Username =>", s.Getconf().Usr)
@@ -124,6 +133,7 @@ func ExeCommand(str string) {
 		fmt.Println("Port =>", s.Getconf().Port)
 		fmt.Println("Table =>", s.Getconf().Table)
 	case "TESTCON":
+
 		dbUtil.TestOpen()
 	case "CLEAR":
 		/*
@@ -133,6 +143,7 @@ func ExeCommand(str string) {
 			cmd.Stderr = os.Stderr
 			cmd.Run()
 		*/
+
 		fmt.Print("\033[H\033[2J")
 	case "NEW":
 		kernel := runtime.GOOS
@@ -147,6 +158,9 @@ func ExeCommand(str string) {
 		os.Remove(cfpath)
 		os.Create(cfpath)
 		fmt.Println("New config file succesfully created!")
+	case "EXIT", "Q", "QUIT":
+		fmt.Println("Exiting...")
+		os.Exit(00)
 	default:
 		return
 	}

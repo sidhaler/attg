@@ -128,7 +128,7 @@ func (s *Atcfg) FatalWarns() {
 
 }
 
-func CopyConfig(path string) {
+func Importf(path string) {
 	var dst string
 	src, err := os.Open(path)
 	if err != nil {
@@ -154,4 +154,31 @@ func CopyConfig(path string) {
 		log.Fatal(err)
 	}
 	fmt.Println("Copied !")
+}
+
+func Export(destpath string) {
+	var srcp string
+	kernel := runtime.GOOS
+	switch kernel {
+	case "linux":
+		srcp = Cfpathlinux
+	case "darwin":
+		srcp = Cfpathdarwin
+	}
+	src, err := os.Open(srcp)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer src.Close()
+	dest, err := os.Create(destpath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer dest.Close()
+	_, err = io.Copy(dest, src)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Exported to ", destpath)
 }

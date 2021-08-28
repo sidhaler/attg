@@ -87,7 +87,6 @@ func writer(path string, str []string, perms os.FileMode) {
 	}
 	w.Flush()
 	file.Close()
-	fmt.Println("written...")
 }
 
 // func ImportTable(path string)
@@ -110,7 +109,7 @@ func ImportAll(path string) {
 
 	scanArgs := make([]interface{}, len(values))
 	for i := range values {
-		scanArgs[i] = &values[i+1]
+		scanArgs[i] = &values[i]
 	}
 	var bomba []string
 	for rows.Next() {
@@ -142,7 +141,7 @@ func FetchwithID(key string) {
 	check(err)
 
 	columns, err := rows.Columns()
-
+	check(err)
 	val := make([]uint8, len(columns))
 
 	scanArgs := make([]interface{}, len(val))
